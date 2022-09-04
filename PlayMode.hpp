@@ -8,7 +8,11 @@
 #include <deque>
 #include <map>
 
-const uint8_t TILE_SIZE = 8;
+// tile and palette indices of assets
+struct Asset {
+	uint32_t tile_index = -1;
+	uint32_t palette_index = -1;
+};
 
 struct PlayMode : Mode {
 	PlayMode();
@@ -18,6 +22,10 @@ struct PlayMode : Mode {
 	virtual bool handle_event(SDL_Event const &, glm::uvec2 const &window_size) override;
 	virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
+
+	virtual std::pair<uint32_t, uint32_t> load_asset(std::string data_path, bool with_palette);
+	Asset snake_head;
+	Asset snake_body;
 
 	//----- game state -----
 

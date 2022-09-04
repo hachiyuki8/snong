@@ -1,10 +1,14 @@
 #include "PPU466.hpp"
 #include "Mode.hpp"
+#include "load_save_png.hpp"
 
 #include <glm/glm.hpp>
 
 #include <vector>
 #include <deque>
+#include <map>
+
+const uint8_t TILE_SIZE = 8;
 
 struct PlayMode : Mode {
 	PlayMode();

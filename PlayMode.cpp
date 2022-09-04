@@ -6,9 +6,88 @@
 //for glm::value_ptr() :
 #include <glm/gtc/type_ptr.hpp>
 
-#include <random>
+// for glm::to_stirng();
+#include <glm/gtx/string_cast.hpp>
+
+#include <glm/gtx/io.hpp>
+
+const std::string IMAGE_PATH = "images/";
+const std::string SNAKE_HEAD_PATH = "/Users/hachiyuki/Desktop/15466/game1/images/snake_head.png";
+const std::string SNAKE_BODY = IMAGE_PATH + "snake_body.png";
+
+const bool DEBUG = true;
+
+// see https://stackoverflow.com/questions/23880160/stdmap-key-no-match-for-operator
+// and https://stackoverflow.com/questions/46636721/how-do-i-use-glm-vector-relational-functions for a wrong answer
+struct vec4Comparator {
+    bool operator() (const glm::vec4& lhs, const glm::vec4& rhs) const {
+        return (lhs.x < rhs.x || (lhs.x == rhs.x && (
+			lhs.y < rhs.y || (lhs.y == rhs.y && (
+				lhs.z < rhs.z || (lhs.z == rhs.z && lhs.w < rhs.w)
+			))
+		)));
+    }
+};
+
 
 PlayMode::PlayMode() {
+	std::vector< glm::u8vec4 > snake_body;
+	std::vector< glm::u8vec4 > ball;
+
+	uint8_t snake_head_palette_index = 0;
+	glm::uvec2 tile_size;
+	std::vector< glm::u8vec4 > snake_head_data;
+	load_png(SNAKE_HEAD_PATH, &tile_size, &snake_head_data, OriginLocation::LowerLeftOrigin);
+	assert(tile_size.x == TILE_SIZE && tile_size.y == TILE_SIZE && "Input PNG is 8x8");
+
+	std::array<std::array<Uint8, 8>, 8> pixel_to_color;
+
+	std::map<glm::u8vec4, uint8_t, vec4Comparator> all_colors;
+	uint8_t counter = 0;
+
+	for (uint8_t i = 0; i < TILE_SIZE; i++) {
+		for (uint8_t j = 0; j < TILE_SIZE; j++) {
+			glm::u8vec4 color = snake_head_data.at(i * TILE_SIZE + j);
+
+			// map each color existing in the image to its corresponding index in the palette
+			if (all_colors.find(color) == all_colors.end()) {
+				assert(counter < 4 && "Each tile contains at most 4 colors");
+				all_colors.insert({color, counter});
+				counter += 1;
+			}
+
+			// map indices of the current pixel to the index of its color in the palette
+			pixel_to_color[i][j] = all_colors.at(color);
+		}
+	}
+
+	// store the color palette for the current tile
+	ppu.palette_table[snake_head_palette_index] = {
+		glm::u8vec4(0x00, 0x00, 0x00, 0x00),
+		glm::u8vec4(0x00, 0x00, 0x00, 0x00),
+		glm::u8vec4(0x00, 0x00, 0x00, 0x00),
+		glm::u8vec4(0x00, 0x00, 0x00, 0x00),
+	};
+	for (auto const& c : all_colors) {
+		glm::u8vec4 color = c.first;
+		uint8_t idx = c.second;
+		ppu.palette_table[snake_head_palette_index][idx] = color;
+	}
+
+	if (DEBUG) {
+		for (uint8_t i = 0; i < 4; i++) {
+			std::cout << glm::to_string(ppu.palette_table[snake_head_palette_index][i]) << std::endl;
+		}
+		for (uint8_t i = 0; i < TILE_SIZE; i++) {
+			for (uint8_t j = 0; j < TILE_SIZE; j++) {
+				std::cout << +pixel_to_color[i][j];
+			}
+			std::cout << std::endl;
+		}
+	}
+	
+
+
 	//TODO:
 	// you *must* use an asset pipeline of some sort to generate tiles.
 	// don't hardcode them like this!
@@ -169,26 +248,26 @@ void PlayMode::update(float elapsed) {
 void PlayMode::draw(glm::uvec2 const &drawable_size) {
 	//--- set ppu state based on game state ---
 
-	//background color will be some hsv-like fade:
-	ppu.background_color = glm::u8vec4(
-		std::min(255,std::max(0,int32_t(255 * 0.5f * (0.5f + std::sin( 2.0f * M_PI * (background_fade + 0.0f / 3.0f) ) ) ))),
-		std::min(255,std::max(0,int32_t(255 * 0.5f * (0.5f + std::sin( 2.0f * M_PI * (background_fade + 1.0f / 3.0f) ) ) ))),
-		std::min(255,std::max(0,int32_t(255 * 0.5f * (0.5f + std::sin( 2.0f * M_PI * (background_fade + 2.0f / 3.0f) ) ) ))),
-		0xff
-	);
+	// //background color will be some hsv-like fade:
+	// ppu.background_color = glm::u8vec4(
+	// 	std::min(255,std::max(0,int32_t(255 * 0.5f * (0.5f + std::sin( 2.0f * M_PI * (background_fade + 0.0f / 3.0f) ) ) ))),
+	// 	std::min(255,std::max(0,int32_t(255 * 0.5f * (0.5f + std::sin( 2.0f * M_PI * (background_fade + 1.0f / 3.0f) ) ) ))),
+	// 	std::min(255,std::max(0,int32_t(255 * 0.5f * (0.5f + std::sin( 2.0f * M_PI * (background_fade + 2.0f / 3.0f) ) ) ))),
+	// 	0xff
+	// );
 
-	//tilemap gets recomputed every frame as some weird plasma thing:
-	//NOTE: don't do this in your game! actually make a map or something :-)
-	for (uint32_t y = 0; y < PPU466::BackgroundHeight; ++y) {
-		for (uint32_t x = 0; x < PPU466::BackgroundWidth; ++x) {
-			//TODO: make weird plasma thing
-			ppu.background[x+PPU466::BackgroundWidth*y] = ((x+y)%16);
-		}
-	}
+	// //tilemap gets recomputed every frame as some weird plasma thing:
+	// //NOTE: don't do this in your game! actually make a map or something :-)
+	// for (uint32_t y = 0; y < PPU466::BackgroundHeight; ++y) {
+	// 	for (uint32_t x = 0; x < PPU466::BackgroundWidth; ++x) {
+	// 		//TODO: make weird plasma thing
+	// 		ppu.background[x+PPU466::BackgroundWidth*y] = ((x+y)%16);
+	// 	}
+	// }
 
-	//background scroll:
-	ppu.background_position.x = int32_t(-0.5f * player_at.x);
-	ppu.background_position.y = int32_t(-0.5f * player_at.y);
+	// //background scroll:
+	// ppu.background_position.x = int32_t(-0.5f * player_at.x);
+	// ppu.background_position.y = int32_t(-0.5f * player_at.y);
 
 	//player sprite:
 	ppu.sprites[0].x = int8_t(player_at.x);
@@ -196,15 +275,15 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 	ppu.sprites[0].index = 32;
 	ppu.sprites[0].attributes = 7;
 
-	//some other misc sprites:
-	for (uint32_t i = 1; i < 63; ++i) {
-		float amt = (i + 2.0f * background_fade) / 62.0f;
-		ppu.sprites[i].x = int8_t(0.5f * PPU466::ScreenWidth + std::cos( 2.0f * M_PI * amt * 5.0f + 0.01f * player_at.x) * 0.4f * PPU466::ScreenWidth);
-		ppu.sprites[i].y = int8_t(0.5f * PPU466::ScreenHeight + std::sin( 2.0f * M_PI * amt * 3.0f + 0.01f * player_at.y) * 0.4f * PPU466::ScreenWidth);
-		ppu.sprites[i].index = 32;
-		ppu.sprites[i].attributes = 6;
-		if (i % 2) ppu.sprites[i].attributes |= 0x80; //'behind' bit
-	}
+	// //some other misc sprites:
+	// for (uint32_t i = 1; i < 63; ++i) {
+	// 	float amt = (i + 2.0f * background_fade) / 62.0f;
+	// 	ppu.sprites[i].x = int8_t(0.5f * PPU466::ScreenWidth + std::cos( 2.0f * M_PI * amt * 5.0f + 0.01f * player_at.x) * 0.4f * PPU466::ScreenWidth);
+	// 	ppu.sprites[i].y = int8_t(0.5f * PPU466::ScreenHeight + std::sin( 2.0f * M_PI * amt * 3.0f + 0.01f * player_at.y) * 0.4f * PPU466::ScreenWidth);
+	// 	ppu.sprites[i].index = 32;
+	// 	ppu.sprites[i].attributes = 6;
+	// 	if (i % 2) ppu.sprites[i].attributes |= 0x80; //'behind' bit
+	// }
 
 	//--- actually draw ---
 	ppu.draw(drawable_size);

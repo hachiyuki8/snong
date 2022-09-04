@@ -15,7 +15,7 @@ const std::string IMAGE_PATH = "images/";
 const std::string SNAKE_HEAD_PATH = "/Users/hachiyuki/Desktop/15466/game1/images/snake_head.png";
 const std::string SNAKE_BODY = IMAGE_PATH + "snake_body.png";
 
-const bool DEBUG = true;
+// const bool DEBUG = true;
 
 // see https://stackoverflow.com/questions/23880160/stdmap-key-no-match-for-operator
 // and https://stackoverflow.com/questions/46636721/how-do-i-use-glm-vector-relational-functions for a wrong answer
@@ -31,63 +31,6 @@ struct vec4Comparator {
 
 
 PlayMode::PlayMode() {
-	std::vector< glm::u8vec4 > snake_body;
-	std::vector< glm::u8vec4 > ball;
-
-	uint8_t snake_head_palette_index = 0;
-	glm::uvec2 tile_size;
-	std::vector< glm::u8vec4 > snake_head_data;
-	load_png(SNAKE_HEAD_PATH, &tile_size, &snake_head_data, OriginLocation::LowerLeftOrigin);
-	assert(tile_size.x == TILE_SIZE && tile_size.y == TILE_SIZE && "Input PNG is 8x8");
-
-	std::array<std::array<Uint8, 8>, 8> pixel_to_color;
-
-	std::map<glm::u8vec4, uint8_t, vec4Comparator> all_colors;
-	uint8_t counter = 0;
-
-	for (uint8_t i = 0; i < TILE_SIZE; i++) {
-		for (uint8_t j = 0; j < TILE_SIZE; j++) {
-			glm::u8vec4 color = snake_head_data.at(i * TILE_SIZE + j);
-
-			// map each color existing in the image to its corresponding index in the palette
-			if (all_colors.find(color) == all_colors.end()) {
-				assert(counter < 4 && "Each tile contains at most 4 colors");
-				all_colors.insert({color, counter});
-				counter += 1;
-			}
-
-			// map indices of the current pixel to the index of its color in the palette
-			pixel_to_color[i][j] = all_colors.at(color);
-		}
-	}
-
-	// store the color palette for the current tile
-	ppu.palette_table[snake_head_palette_index] = {
-		glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-		glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-		glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-		glm::u8vec4(0x00, 0x00, 0x00, 0x00),
-	};
-	for (auto const& c : all_colors) {
-		glm::u8vec4 color = c.first;
-		uint8_t idx = c.second;
-		ppu.palette_table[snake_head_palette_index][idx] = color;
-	}
-
-	if (DEBUG) {
-		for (uint8_t i = 0; i < 4; i++) {
-			std::cout << glm::to_string(ppu.palette_table[snake_head_palette_index][i]) << std::endl;
-		}
-		for (uint8_t i = 0; i < TILE_SIZE; i++) {
-			for (uint8_t j = 0; j < TILE_SIZE; j++) {
-				std::cout << +pixel_to_color[i][j];
-			}
-			std::cout << std::endl;
-		}
-	}
-	
-
-
 	//TODO:
 	// you *must* use an asset pipeline of some sort to generate tiles.
 	// don't hardcode them like this!

@@ -24,8 +24,7 @@ struct PlayMode : Mode {
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
 	virtual std::pair<uint32_t, uint32_t> load_asset(std::string data_path, bool with_palette);
-	Asset snake_head;
-	Asset snake_body;
+	Asset snake_head, snake_body, ball, background, bar;
 
 	//----- game state -----
 

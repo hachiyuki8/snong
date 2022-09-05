@@ -1,3 +1,4 @@
+from tkinter.tix import IMAGE
 from PIL import Image
 from numpy import asarray
 
@@ -7,12 +8,24 @@ COLOR_LIMIT = 4
 IMAGE_PATH = "images/"
 SNAKE_HEAD_PATH = IMAGE_PATH + "snake_head.png"
 SNAKE_BODY_PATH = IMAGE_PATH + "snake_body.png"
+BALL_PATH = IMAGE_PATH + "ball.png"
+BACKGROUND_PATH = IMAGE_PATH + "background.png"
+BAR_PATH = IMAGE_PATH + "bar.png"
 
 DATA_PATH = "dist/"
 SNAKE_HEAD_DATA = DATA_PATH + "snake_head.dat"
 SNAKE_BODY_DATA = DATA_PATH + "snake_body.dat"
+BALL_DATA = DATA_PATH + "ball.dat"
+BACKGROUND_DATA = DATA_PATH + "background.dat"
+BAR_DATA = DATA_PATH + "bar.dat"
 
-ASSETS = {SNAKE_HEAD_PATH: SNAKE_HEAD_DATA, SNAKE_BODY_PATH: SNAKE_BODY_DATA}
+ASSETS = {
+    SNAKE_HEAD_PATH: SNAKE_HEAD_DATA, 
+    SNAKE_BODY_PATH: SNAKE_BODY_DATA,
+    BALL_PATH: BALL_DATA,
+    BACKGROUND_PATH: BACKGROUND_DATA,
+    BAR_PATH: BAR_DATA,
+}
 
 def make_file_from_image(image_path: str):
     """

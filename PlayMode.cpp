@@ -28,6 +28,54 @@ const std::string BAR_DATA = DATA_PATH + "bar.dat";
 
 const bool DEBUG = true;
 
+PlayMode::PlayMode() {
+	// load assets
+	{
+		std::pair<uint32_t, uint32_t> indices;
+
+		indices = load_asset(SNAKE_HEAD_DATA, true);
+		snake_head.tile_index = indices.first;
+		snake_head.palette_index = indices.second;
+
+		indices = load_asset(SNAKE_BODY_DATA, true);
+		snake_body.tile_index = indices.first;
+		snake_body.palette_index = indices.second;
+
+		indices = load_asset(BALL_DATA, true);
+		ball.tile.tile_index = indices.first;
+		ball.tile.palette_index = indices.second;
+
+		indices = load_asset(BACKGROUND_DATA, true);
+		background.tile_index = indices.first;
+		background.palette_index = indices.second;
+
+		indices = load_asset(BAR_DATA, true);
+		bar.tile_index = indices.first;
+		bar.palette_index = indices.second;
+	}
+
+	// make background
+	{
+		uint32_t bg = background.palette_index << 8 | background.tile_index;
+		uint32_t b = bar.palette_index << 8 | bar.tile_index;
+		for (uint32_t y = 0; y < PPU466::BackgroundHeight; y++) {
+			for (uint32_t x = 0; x < PPU466::BackgroundWidth; x++) {
+				if (y == PPU466::BackgroundHeight / 4 || y == PPU466::BackgroundHeight / 4 - 1) {
+					ppu.background[x+PPU466::BackgroundWidth*y] = b;
+				} else {
+					ppu.background[x+PPU466::BackgroundWidth*y] = bg;
+				}
+			}
+		}
+	}
+
+	initialize_game_state();
+}
+
+PlayMode::~PlayMode() {
+}
+
+
 std::pair<uint32_t, uint32_t> PlayMode::load_asset(std::string data_path, bool with_palette) {
 	static uint32_t tile_index = 0;
 	static uint32_t palette_index = 0;
@@ -98,10 +146,13 @@ std::pair<uint32_t, uint32_t> PlayMode::load_asset(std::string data_path, bool w
 
 void PlayMode::initialize_game_state() {
 	{ // ball
-		ball.position.x = (PPU466::ScreenWidth - TILE_SIZE) / 2;
-		ball.position.y = (PPU466::ScreenHeight - TILE_SIZE) / 2;
-		ball.x_velocity = 30.0f; // TODO: randomize
-		ball.y_velocity = 40.0f;
+		reset_ball();
+		// if (DEBUG) {
+		// 	ball.position.x = 0;
+		// 	ball.position.y = (PPU466::ScreenHeight - TILE_SIZE);
+		// 	ball.x_velocity = 30.0f;
+		// 	ball.y_velocity = 0.0f;
+		// }
 	}
 
 	{ // player 1
@@ -119,7 +170,6 @@ void PlayMode::initialize_game_state() {
 			body.tile = snake_body;
 			snake_1.bodies.push_back(body);
 		}
-		snake_1.x_velocity = -8.0f;
 		snake_1.direction = LEFT;
 	}
 
@@ -138,56 +188,8 @@ void PlayMode::initialize_game_state() {
 			body.tile = snake_body;
 			snake_2.bodies.push_back(body);
 		}
-		snake_2.x_velocity = 8.0f;
 		snake_2.direction = RIGHT;
 	}
-}
-
-PlayMode::PlayMode() {
-	// load assets
-	{
-		std::pair<uint32_t, uint32_t> indices;
-
-		indices = load_asset(SNAKE_HEAD_DATA, true);
-		snake_head.tile_index = indices.first;
-		snake_head.palette_index = indices.second;
-
-		indices = load_asset(SNAKE_BODY_DATA, true);
-		snake_body.tile_index = indices.first;
-		snake_body.palette_index = indices.second;
-
-		indices = load_asset(BALL_DATA, true);
-		ball.tile.tile_index = indices.first;
-		ball.tile.palette_index = indices.second;
-
-		indices = load_asset(BACKGROUND_DATA, true);
-		background.tile_index = indices.first;
-		background.palette_index = indices.second;
-
-		indices = load_asset(BAR_DATA, true);
-		bar.tile_index = indices.first;
-		bar.palette_index = indices.second;
-	}
-
-	// make background
-	{
-		uint32_t bg = background.palette_index << 8 | background.tile_index;
-		uint32_t b = bar.palette_index << 8 | bar.tile_index;
-		for (uint32_t y = 0; y < PPU466::BackgroundHeight; y++) {
-			for (uint32_t x = 0; x < PPU466::BackgroundWidth; x++) {
-				if (y == PPU466::BackgroundHeight / 4 || y == PPU466::BackgroundHeight / 4 - 1) {
-					ppu.background[x+PPU466::BackgroundWidth*y] = b;
-				} else {
-					ppu.background[x+PPU466::BackgroundWidth*y] = bg;
-				}
-			}
-		}
-	}
-
-	initialize_game_state();
-}
-
-PlayMode::~PlayMode() {
 }
 
 bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
@@ -196,28 +198,44 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			game_state = IN_PROGRESS;
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_a) {
-			snake_1.direction = LEFT;
+			if (snake_1.direction != RIGHT) {
+				snake_1.direction = LEFT;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_d) {
-			snake_1.direction = RIGHT;
+			if (snake_1.direction != LEFT) {
+				snake_1.direction = RIGHT;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_w) {
-			snake_1.direction = UP;
+			if (snake_1.direction != DOWN) {
+				snake_1.direction = UP;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_s) {
-			snake_1.direction = DOWN;
+			if (snake_1.direction != UP) {
+				snake_1.direction = DOWN;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_LEFT) {
-			snake_2.direction = LEFT;
+			if (snake_2.direction != RIGHT) {
+				snake_2.direction = LEFT;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_RIGHT) {
-			snake_2.direction = RIGHT;
+			if (snake_2.direction != LEFT) {
+				snake_2.direction = RIGHT;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_UP) {
-			snake_2.direction = UP;
+			if (snake_2.direction != DOWN) {
+				snake_2.direction = UP;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_DOWN) {
-			snake_2.direction = DOWN;
+			if (snake_2.direction != UP) {
+				snake_2.direction = DOWN;
+			}
 			return true;
 		}
 	} 
@@ -225,91 +243,273 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 	return false;
 }
 
+// add a tail to the snake
+void PlayMode::increase_snake(Snake *snake) {
+	if (snake->bodies.size() < snake->max_len) {
+		SnakeBody body;
+		body.position = snake->bodies.back().position;
+		body.tile = snake_body;
+
+		{ // pick a direction to add the tail without colliding
+			bool flag = true;
+			body.position.x -= TILE_SIZE;
+			for (auto &b : snake->bodies) {
+				if (b.position.x == body.position.x) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag) {
+				snake->bodies.push_back(body);
+				return;
+			}
+			body.position.x += TILE_SIZE;
+
+			body.position.x += TILE_SIZE;
+			for (auto &b : snake->bodies) {
+				if (b.position.x == body.position.x) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag) {
+				snake->bodies.push_back(body);
+				return;
+			}
+			body.position.x -= TILE_SIZE;
+
+			body.position.y -= TILE_SIZE;
+			for (auto &b : snake->bodies) {
+				if (b.position.x == body.position.x) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag) {
+				snake->bodies.push_back(body);
+				return;
+			}
+			body.position.y += TILE_SIZE;
+
+			body.position.y += TILE_SIZE;
+			for (auto &b : snake->bodies) {
+				if (b.position.y == body.position.y) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag) {
+				snake->bodies.push_back(body);
+				return;
+			}
+			body.position.y -= TILE_SIZE;
+		}
+	}
+}
+
+// remove the tail from the snake
+void PlayMode::decrease_snake(Snake *snake) {
+	if (snake->bodies.size() > snake->min_len) {
+		snake->bodies.pop_back();
+	}
+}
+
 // fixed time update: move the snake by one chunk/tile
 bool PlayMode::update_snake(Snake *snake, uint32_t y_bound_up, uint32_t y_bound_down) {
-	// remove tail and add a new block in front of the new head
-	snake->bodies.pop_back();
-	snake->bodies.front().tile = snake_body;
-	glm::vec2 pos = snake->bodies.front().position;
-	switch (snake->direction) {
-		case UP:
-			pos.y += TILE_SIZE;
-			break;
-		case DOWN:
-			pos.y -= TILE_SIZE;
-			break;
-		case LEFT:
-			pos.x -= TILE_SIZE;
-			break;
-		case RIGHT:
-			pos.x += TILE_SIZE;
-			break;
-	}
 	SnakeBody head;
-	head.tile = snake_head;
-	head.position = pos;
+	{ // remove tail and add a new block in front of the new head
+		snake->bodies.pop_back();
+		snake->bodies.front().tile = snake_body;
+		glm::vec2 pos = snake->bodies.front().position;
+		switch (snake->direction) {
+			case UP:
+				pos.y += TILE_SIZE;
+				break;
+			case DOWN:
+				pos.y -= TILE_SIZE;
+				break;
+			case LEFT:
+				pos.x -= TILE_SIZE;
+				break;
+			case RIGHT:
+				pos.x += TILE_SIZE;
+				break;
+			default:
+				break;
+		}
+		head.tile = snake_head;
+		head.position = pos;
+	}
+
+	{ // check out of boundary or collision with self
+		glm::vec2 pos = snake->bodies.front().position;
+
+		if (pos.x < 0 || pos.x > PPU466::ScreenWidth - TILE_SIZE ||
+			pos.y > y_bound_up || pos.y < y_bound_down) {
+			return false;
+		} 
+
+		for (auto &b: snake->bodies) {
+			if (head.position.x == b.position.x && head.position.y == b.position.y) {
+				return false;
+			}
+		}
+	}
+
 	snake->bodies.push_front(head);
-
-	// check collision / out of boundary
-	pos = snake->bodies.front().position;
-	if (pos.x < 0 || pos.x > PPU466::ScreenWidth - TILE_SIZE ||
-		pos.y > y_bound_up || pos.y < y_bound_down) {
-		snake->bodies.pop_front();
-		return false;
-	} 
-
 	return true;
 }
 
-void PlayMode::update(float elapsed) {
-	if (game_state == IN_PROGRESS) {
-		{ // snake (fixed time update)
-			// https://15466.courses.cs.cmu.edu/lesson/timing
-			snake_speed_tick += elapsed;
-			while (snake_speed_tick > 10.0f) {
-				snake_speed_tick -= 10.0f;
-				if (snake_speed_unit > 0.01f) {
-					snake_speed_unit -= 0.01f;
-				}
-			}
+// https://lazyfoo.net/tutorials/SDL/27_collision_detection/index.php
+bool PlayMode::check_ball_collision(Snake *snake) {
+	for (auto &body: snake->bodies) {
+		if ((ball.position.x > body.position.x + TILE_SIZE) ||
+			(ball.position.x + TILE_SIZE < body.position.x) ||
+			(ball.position.y > body.position.y + TILE_SIZE) ||
+			(ball.position.y + TILE_SIZE < body.position.y)) {
+			continue;
+		} else {
+			return true;
+		}
+	}
+	return false;
+}
 
-			snake_tick += elapsed;
-			while (snake_tick > snake_speed_unit) {
-				snake_tick -= snake_speed_unit;
-				bool one = update_snake(&snake_1, 
-					PPU466::ScreenHeight - TILE_SIZE, PPU466::ScreenHeight / 2 + TILE_SIZE);
-				bool two = update_snake(&snake_2,
-					PPU466::ScreenHeight / 2 - TILE_SIZE * 2, 0);
-				if (!one && !two) {
-					game_state = DRAW;
-				} else if (!one) {
-					game_state = PLAYER_2_WON;
-				} else if (!two) {
-					game_state = PLAYER_1_WON;
-				}
+int PlayMode::update_ball(float elapsed) {
+	ball.position.x += ball.x_velocity * elapsed;
+	{
+		bool flag_1 = check_ball_collision(&snake_1);
+		bool flag_2 = check_ball_collision(&snake_2);
+		if (flag_1 || flag_2 || ball.position.x > PPU466::ScreenWidth - TILE_SIZE || ball.position.x < 0) {
+			ball.position.x -= ball.x_velocity * elapsed;
+			if (ball.x_velocity > 0.0f) {
+				ball.x_velocity = rand() % ball_speed_base + ball_speed_range;
+				ball.x_velocity *= -1.0f;
+			} else {
+				ball.x_velocity = rand() % ball_speed_base + ball_speed_range;
 			}
 		}
-
-		{ // ball
-			ball.position.x += ball.x_velocity * elapsed;
-			if (ball.position.x > PPU466::ScreenWidth - TILE_SIZE) {
-				ball.position.x = PPU466::ScreenWidth - TILE_SIZE;
-				ball.x_velocity *= -1.0f; // TODO: randomize
+		if (flag_1) {
+			increase_snake(&snake_1);
+		}
+		if (flag_2) {
+			increase_snake(&snake_2);
+		}
+	}
+	
+	ball.position.y += ball.y_velocity * elapsed;
+	{
+		bool flag_1 = check_ball_collision(&snake_1);
+		bool flag_2 = check_ball_collision(&snake_2);
+		if (flag_1 || flag_2 || ball.position.y > PPU466::ScreenHeight - TILE_SIZE || ball.position.y < 0) {
+			ball.position.y -= ball.y_velocity * elapsed * 2;
+			if (ball.y_velocity > 0.0f) {
+				ball.y_velocity = rand() % ball_speed_base + ball_speed_range;
+				ball.y_velocity *= -1.0f;
+			} else {
+				ball.y_velocity = rand() % ball_speed_base + ball_speed_range;
 			}
-			if (ball.position.x < 0) {
-				ball.position.x = 0;
-				ball.x_velocity *= -1.0f;
-			}
+		}
+		if (flag_1) {
+			increase_snake(&snake_1);
+		}
+		if (flag_2) {
+			increase_snake(&snake_2);
+		}
+	}
 
-			ball.position.y += ball.y_velocity * elapsed;
+	{ // check game termination
+		if (!DEBUG) {
 			if (ball.position.y > PPU466::ScreenHeight - TILE_SIZE) {
 				ball.y_velocity = 0.0f;
-				game_state = PLAYER_1_WON;
+				return 1;
 			}
 			if (ball.position.y < 0) {
 				ball.y_velocity = 0.0f;
-				game_state = PLAYER_2_WON;
+				return 2;
 			}
+		}
+	}
+
+	return 0;
+}
+
+void PlayMode::reset_ball() {
+	if (DEBUG) {
+		std::cout << "Resetting ball position" << std::endl;
+	}
+	ball.position.x = (PPU466::ScreenWidth - TILE_SIZE) / 2;
+	ball.position.y = (PPU466::ScreenHeight - TILE_SIZE) / 2;
+	ball.x_velocity = rand() % ball_speed_base + ball_speed_range;
+	ball.y_velocity = rand() % ball_speed_base + ball_speed_range;
+}
+
+void PlayMode::update(float elapsed) {
+	// ball
+	if (game_state == IN_PROGRESS) {
+		switch (update_ball(elapsed)) {
+			case 1:
+				game_state = PLAYER_1_WON;
+				break;
+			case 2:
+				game_state = PLAYER_2_WON;
+				break;
+			case -1:
+				game_state = DRAW;
+				break;
+			default:
+				break;
+		}
+
+		if (DEBUG && game_state != IN_PROGRESS) {
+			std::cout << "Game state updated to: " << game_state << std::endl;
+		}
+	}
+
+	// snake (fixed time update)
+	if (game_state == IN_PROGRESS) {
+		// https://15466.courses.cs.cmu.edu/lesson/timing
+		snake_speed_tick += elapsed;
+		while (snake_speed_tick > 5.0f) {
+			if (DEBUG) {
+				std::cout << "Increasing moving speed" << std::endl;
+			}
+			snake_speed_tick -= 10.0f;
+			if (snake_speed_unit > 0.01f) {
+				snake_speed_unit -= 0.01f;
+			}
+			ball_speed_base += 10;
+			ball_speed_range += 10;
+		}
+
+		snake_tick += elapsed;
+		while (snake_tick > snake_speed_unit) {
+			snake_tick -= snake_speed_unit;
+			bool one = update_snake(&snake_1, 
+				PPU466::ScreenHeight - TILE_SIZE, PPU466::ScreenHeight / 2 + TILE_SIZE);
+			bool two;
+			if (DEBUG) {
+				two = true;
+			} else {
+				two = update_snake(&snake_2,
+					PPU466::ScreenHeight / 2 - TILE_SIZE * 2, 0);
+			}
+
+			if (!one && !two) {
+				game_state = DRAW;
+			} else if (!one) {
+				game_state = PLAYER_2_WON;
+			} else if (!two) {
+				game_state = PLAYER_1_WON;
+			}
+		}
+
+		if (check_ball_collision(&snake_1)) {
+			decrease_snake(&snake_1);
+			reset_ball();
+		} else if (check_ball_collision(&snake_2)) {
+			decrease_snake(&snake_2);
+			reset_ball();
 		}
 
 		if (DEBUG && game_state != IN_PROGRESS) {

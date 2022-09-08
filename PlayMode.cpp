@@ -310,50 +310,25 @@ std::pair<int, int> PlayMode::load_asset(std::string data_path, bool with_palett
     file.seekg(0);
     file.read((char *)data.data(), size);
 
-	PPU466::Tile tile;
-	for (uint16_t i = 0; i < TILE_SIZE; i++) {
-		tile.bit0[i] = data[i];
-		tile.bit1[i] = data[TILE_SIZE+i];
-	}
 	assert((uint32_t) tile_index < TILE_LIMIT && "PPU stores at most 256 tiles");
-	ppu.tile_table[tile_index] = tile;
+	for (uint16_t i = 0; i < TILE_SIZE; i++) {
+		ppu.tile_table[tile_index].bit0[i] = data[i];
+		ppu.tile_table[tile_index].bit1[i] = data[TILE_SIZE+i];
+	}
 	tile_index += 1;
 
-	PPU466::Palette palette;
 	if (with_palette) {
+		assert((uint32_t) palette_index < PALETTE_LIMIT && "PPU stores at most 8 palettes");
 		uint16_t offset = TILE_SIZE * 2;
 		for (uint16_t i = 0; i < COLOR_LIMIT; i++) {
-			palette[i] = glm::u8vec4(
+			ppu.palette_table[palette_index][i] = glm::u8vec4(
 				(uint8_t)data[offset + i * 4],
 				(uint8_t)data[offset + i * 4 + 1],
 				(uint8_t)data[offset + i * 4 + 2],
 				(uint8_t)data[offset + i * 4 + 3]
 			);
 		}
-		assert((uint32_t) palette_index < PALETTE_LIMIT && "PPU stores at most 8 palettes");
-		ppu.palette_table[palette_index] = palette;
 		palette_index += 1;
-	}
-
-	if (DEBUG) {
-		std::cout << "Loaded " << data_path << std::endl;
-		std::cout << "- Tile " << +(tile_index - 1) << ": " << std::endl;
-		for (uint16_t i = 0; i < TILE_SIZE; i++) {
-			std::cout << "  ";
-			for (uint16_t j = 0; j < TILE_SIZE; j++) {
-				auto bit0 = (tile.bit0[i] >> j) & 1;
-				auto bit1 = (tile.bit1[i] >> j) & 1;
-				auto color_index = (bit1 << 1) | bit0;
-				std::cout << +color_index;
-			}
-			std::cout << std::endl;
-		}
-		if (with_palette) {
-			std::cout << "- Palette " << +(palette_index - 1) << ": " << std::endl;
-			for (uint16_t i = 0; i < COLOR_LIMIT; i++) {
-				std::cout << "  " << glm::to_string(palette[i]) << std::endl;
-			}
-		}
 	}
 
 	return std::make_pair(tile_index-1, palette_index-1);

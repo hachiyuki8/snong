@@ -6,25 +6,41 @@ TILE_SIZE = 8
 COLOR_LIMIT = 4
 
 IMAGE_PATH = "images/"
-SNAKE_HEAD_PATH = IMAGE_PATH + "snake_head.png"
-SNAKE_BODY_PATH = IMAGE_PATH + "snake_body.png"
-BALL_PATH = IMAGE_PATH + "ball.png"
-BACKGROUND_PATH = IMAGE_PATH + "background.png"
-BAR_PATH = IMAGE_PATH + "bar.png"
-
 DATA_PATH = "dist/"
-SNAKE_HEAD_DATA = DATA_PATH + "snake_head.dat"
-SNAKE_BODY_DATA = DATA_PATH + "snake_body.dat"
-BALL_DATA = DATA_PATH + "ball.dat"
-BACKGROUND_DATA = DATA_PATH + "background.dat"
-BAR_DATA = DATA_PATH + "bar.dat"
 
 ASSETS = {
-    SNAKE_HEAD_PATH: SNAKE_HEAD_DATA, 
-    SNAKE_BODY_PATH: SNAKE_BODY_DATA,
-    BALL_PATH: BALL_DATA,
-    BACKGROUND_PATH: BACKGROUND_DATA,
-    BAR_PATH: BAR_DATA,
+    "snake_head.png": "snake_head.dat", 
+    "snake_head_1.png": "snake_head_1.dat", 
+    "snake_head_2.png": "snake_head_2.dat", 
+    "snake_head_3.png": "snake_head_3.dat", 
+    "snake_head_4.png": "snake_head_4.dat", 
+    "snake_body.png": "snake_body.dat",
+    "ball.png": "ball.dat",
+    "background.png": "background.dat",
+    "bar_top.png": "bar_top.dat",
+    "bar_bottom.png": "bar_bottom.dat",
+    "A.png": "A.dat",
+    "B.png": "B.dat",
+    "C.png": "C.dat",
+    "D.png": "D.dat",
+    "E.png": "E.dat",
+    "G.png": "G.dat",
+    "I.png": "I.dat",
+    "L.png": "L.dat",
+    "M.png": "M.dat",
+    "N.png": "N.dat",
+    "O.png": "O.dat",
+    "P.png": "P.dat",
+    "R.png": "R.dat",
+    "S.png": "S.dat",
+    "T.png": "T.dat",
+    "V.png": "V.dat",
+    "W.png": "W.dat",
+    "Y.png": "Y.dat",
+    "up_arrow.png": "up_arrow.dat",
+    "left_arrow.png": "left_arrow.dat",
+    "down_arrow.png": "down_arrow.dat",
+    "right_arrow.png": "right_arrow.dat",
 }
 
 def make_file_from_image(image_path: str):
@@ -33,7 +49,7 @@ def make_file_from_image(image_path: str):
     """
     
     # https://www.pluralsight.com/guides/importing-image-data-into-numpy-arrays
-    snake_head = Image.open(image_path)
+    snake_head = Image.open(IMAGE_PATH + image_path)
     assert snake_head.size == (TILE_SIZE, TILE_SIZE)
     data = asarray(snake_head)
 
@@ -57,7 +73,7 @@ def make_file_from_image(image_path: str):
     for row in pixel_to_color[::-1]:
         bit0 = 0
         bit1 = 0
-        for col in row:
+        for col in row[::-1]:
             bit0 = (bit0 << 1) | col & 1
             bit1 = (bit1 << 1) | ((col >> 1) & 1)
         tile_data[0].append(bit0)
@@ -69,7 +85,7 @@ def make_file_from_image(image_path: str):
         bit1 = tile_data[1][x]
         for y in range(TILE_SIZE):
             color = (((bit1 >> y) & 1) << 1) | ((bit0 >> y) & 1)
-            assert(color == pixel_to_color[TILE_SIZE-1-x][TILE_SIZE-1-y])
+            assert(color == pixel_to_color[TILE_SIZE-1-x][y])
     
     return (tile_data, colors)
 
@@ -84,10 +100,10 @@ def write_to_binary(tile, palette, output_file):
 def main():
     for image_path, output_path in ASSETS.items():
         tile, palette = make_file_from_image(image_path)
-        write_to_binary(tile, palette, output_path)
+        write_to_binary(tile, palette, DATA_PATH + output_path)
 
         # testing for data integrity
-        with open(output_path, "rb") as f:
+        with open(DATA_PATH + output_path, "rb") as f:
             data = f.read()
             tile0 = data[:TILE_SIZE]
             tile1 = data[TILE_SIZE:2*TILE_SIZE]

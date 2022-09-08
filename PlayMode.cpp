@@ -315,7 +315,7 @@ std::pair<int, int> PlayMode::load_asset(std::string data_path, bool with_palett
 		tile.bit0[i] = data[i];
 		tile.bit1[i] = data[TILE_SIZE+i];
 	}
-	assert(tile_index < TILE_LIMIT && "PPU stores at most 256 tiles");
+	assert((uint32_t) tile_index < TILE_LIMIT && "PPU stores at most 256 tiles");
 	ppu.tile_table[tile_index] = tile;
 	tile_index += 1;
 
@@ -330,7 +330,7 @@ std::pair<int, int> PlayMode::load_asset(std::string data_path, bool with_palett
 				(uint8_t)data[offset + i * 4 + 3]
 			);
 		}
-		assert(palette_index < PALETTE_LIMIT && "PPU stores at most 8 palettes");
+		assert((uint32_t) palette_index < PALETTE_LIMIT && "PPU stores at most 8 palettes");
 		ppu.palette_table[palette_index] = palette;
 		palette_index += 1;
 	}

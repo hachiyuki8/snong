@@ -9,7 +9,7 @@
 #include <map>
 #include <list>
 
-enum Direction {
+enum Direction : uint16_t {
 	UP,
 	DOWN,
 	LEFT,
@@ -77,7 +77,7 @@ struct PlayMode : Mode {
 	virtual bool update_snake(Snake *snake, uint32_t y_bound_up, uint32_t y_bound_down);
 	virtual bool check_snake_collision(float x, float y, Snake *snake);
 	virtual void add_tail_to_snake(Snake *snake);
-	virtual void remove_tail_from_snake(Snake *snake);
+	virtual void remove_tail_from_snake(Snake *snake, uint16_t length);
 
 	// ball
 	Ball ball;

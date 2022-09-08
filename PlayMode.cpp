@@ -507,14 +507,18 @@ void PlayMode::add_tail_to_snake(Snake *snake) {
 	}
 }
 
-// remove the tail from the snake
-void PlayMode::remove_tail_from_snake(Snake *snake) {
-	if (snake->bodies.size() > snake->min_len) {
-		if (DEBUG) {
-			std::cout << "[logger] Removing tail from snake" << std::endl;
+// remove at most the specified number of chunks from the tail of the snake
+void PlayMode::remove_tail_from_snake(Snake *snake, uint16_t length) {
+	for (uint16_t i = 0; i < length; i++) {
+		if (snake->bodies.size() > snake->min_len) {
+			if (DEBUG) {
+				std::cout << "[logger] Removing tail from snake" << std::endl;
+			}
+			snake->bodies.back().position = glm::vec2(-TILE_SIZE, TILE_SIZE);
+			snake->bodies.pop_back();
+		} else {
+			break;
 		}
-		snake->bodies.back().position = glm::vec2(-TILE_SIZE, TILE_SIZE);
-		snake->bodies.pop_back();
 	}
 }
 
@@ -667,10 +671,10 @@ void PlayMode::update(float elapsed) {
 
 		// if the snake moves into the ball, reset the ball
 		if (check_ball_collision(&snake_1)) {
-			remove_tail_from_snake(&snake_1);
+			remove_tail_from_snake(&snake_1, ball_speed_base / 10);
 			reset_ball();
 		} else if (check_ball_collision(&snake_2)) {
-			remove_tail_from_snake(&snake_2);
+			remove_tail_from_snake(&snake_2, 10);
 			reset_ball();
 		}
 

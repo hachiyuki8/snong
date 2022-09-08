@@ -292,7 +292,6 @@ PlayMode::PlayMode() {
 }
 
 PlayMode::~PlayMode() {
-	// TODO: deallocate
 }
 
 
@@ -478,7 +477,8 @@ bool PlayMode::check_snake_collision(float x, float y, Snake *snake) {
 // add a tail to the snake
 void PlayMode::add_tail_to_snake(Snake *snake) {
 	if (DEBUG) {
-		std::cout << "[logger] Adding tail to snake" << std::endl;
+		int i = (snake == &snake_1) ? 1 : 2;
+		std::cout << "[logger] Adding tail to snake " << i << std::endl;
 	}
 	if (snake->bodies.size() >= snake->max_len) {
 		return;
@@ -490,35 +490,20 @@ void PlayMode::add_tail_to_snake(Snake *snake) {
 	body.tile = snake_body;
 
 	// pick a direction to add the tail without colliding
-	if (x - TILE_SIZE >= 0 && check_snake_collision(x - TILE_SIZE, y, snake)) {
+	if (x - TILE_SIZE >= 0 && !check_snake_collision(x - TILE_SIZE, y, snake)) {
 		body.position = glm::vec2(x - TILE_SIZE, y);
 		snake->bodies.push_back(body);
-	} else if (body.position.x + TILE_SIZE <= PPU466::ScreenWidth && check_snake_collision(x + TILE_SIZE, y, snake)) {
+	} else if (body.position.x + TILE_SIZE <= PPU466::ScreenWidth && !check_snake_collision(x + TILE_SIZE, y, snake)) {
 		body.position = glm::vec2(x + TILE_SIZE, y);
 		snake->bodies.push_back(body);
-	} else if (body.position.y - TILE_SIZE >= 0 && check_snake_collision(x, y - TILE_SIZE, snake)) {
+	} else if (body.position.y - TILE_SIZE >= 0 && !check_snake_collision(x, y - TILE_SIZE, snake)) {
 		body.position = glm::vec2(x, y - TILE_SIZE);
 		snake->bodies.push_back(body);
-	} else if (body.position.y + TILE_SIZE <= PPU466::ScreenHeight && check_snake_collision(x, y + TILE_SIZE, snake)) {
+	} else if (body.position.y + TILE_SIZE <= PPU466::ScreenHeight && !check_snake_collision(x, y + TILE_SIZE, snake)) {
 		body.position = glm::vec2(x, y + TILE_SIZE);
 		snake->bodies.push_back(body);
 	} else if (DEBUG) {
 		std::cout << "[logger] Failed to add tail to snake" << std::endl;
-	}
-}
-
-// remove at most the specified number of chunks from the tail of the snake
-void PlayMode::remove_tail_from_snake(Snake *snake, uint16_t length) {
-	for (uint16_t i = 0; i < length; i++) {
-		if (snake->bodies.size() > snake->min_len) {
-			if (DEBUG) {
-				std::cout << "[logger] Removing tail from snake" << std::endl;
-			}
-			snake->bodies.back().position = glm::vec2(-TILE_SIZE, TILE_SIZE);
-			snake->bodies.pop_back();
-		} else {
-			break;
-		}
 	}
 }
 
@@ -671,15 +656,9 @@ void PlayMode::update(float elapsed) {
 
 		// if the snake moves into the ball, reset the ball
 		if (check_ball_collision(&snake_1)) {
-			remove_tail_from_snake(&snake_1, ball_speed_base / 10);
 			reset_ball();
 		} else if (check_ball_collision(&snake_2)) {
-			remove_tail_from_snake(&snake_2, 10);
 			reset_ball();
-		}
-
-		if (DEBUG && game_state != IN_PROGRESS) {
-			std::cout << "Game state updated to: " << game_state << std::endl;
 		}
 	}
 }

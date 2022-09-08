@@ -34,7 +34,7 @@ struct Snake {
 	uint32_t min_len = 20;
 	Direction direction;
 	Asset head_animation [4];
-	uint16_t head_animation_idx = 0;
+	uint8_t head_animation_idx = 0;
 };
 
 struct Ball {
@@ -60,7 +60,7 @@ struct PlayMode : Mode {
 	Asset A, B, C, D, E, G, I, L, M, N, O, P, R, S, T, V, W, Y;
 
 	//----- game state -----
-	enum GameState {
+	enum GameState : uint16_t {
 		PAUSE,
 		IN_PROGRESS,
 		PLAYER_1_WON,
@@ -77,7 +77,6 @@ struct PlayMode : Mode {
 	virtual bool update_snake(Snake *snake, uint32_t y_bound_up, uint32_t y_bound_down);
 	virtual bool check_snake_collision(float x, float y, Snake *snake);
 	virtual void add_tail_to_snake(Snake *snake);
-	virtual void remove_tail_from_snake(Snake *snake, uint16_t length);
 
 	// ball
 	Ball ball;

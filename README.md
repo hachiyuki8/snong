@@ -2,7 +2,7 @@
 
 Author: Joanna Yao
 
-Design: Pong but instead of winning by hitting the ball into the opponent's side, you win by hitting ball with your snake to make the opponent's snake longer, so they can lose the snake game before you. The ball bounces off all four sides, and if your snake eats the ball, your snake will become shorter.
+Design: Pong but instead of winning by hitting the ball into the opponent's side, you win by hitting ball with your snake to make the opponent's snake longer, so they can lose the snake game before you.
 
 Screen Shot:
 

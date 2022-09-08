@@ -66,58 +66,58 @@ void PlayMode::type_text(uint16_t y, uint16_t x, std::string text) {
 		}
 		switch (letter) {
 			case 'A':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(A);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(A);
 				break;
 			case 'B':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(B);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(B);
 				break;
 			case 'C':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(C);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(C);
 				break;
 			case 'D':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(D);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(D);
 				break;
 			case 'E':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(E);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(E);
 				break;
 			case 'G':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(G);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(G);
 				break;
 			case 'I':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(I);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(I);
 				break;
 			case 'L':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(L);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(L);
 				break;
 			case 'M':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(M);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(M);
 				break;
 			case 'N':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(N);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(N);
 				break;
 			case 'O':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(O);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(O);
 				break;
 			case 'P':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(P);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(P);
 				break;
 			case 'R':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(R);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(R);
 				break;
 			case 'S':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(S);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(S);
 				break;
 			case 'T':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(T);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(T);
 				break;
 			case 'V':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(V);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(V);
 				break;
 			case 'W':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(W);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(W);
 				break;
 			case 'Y':
-				ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(Y);
+				ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(Y);
 				break;
 			default:
 				break;
@@ -128,130 +128,130 @@ void PlayMode::type_text(uint16_t y, uint16_t x, std::string text) {
 
 PlayMode::PlayMode() {
 	{ // load assets
-		std::pair<uint8_t, uint8_t> indices;
+		std::pair<int, int> indices;
 
 		indices = load_asset(SNAKE_HEAD_1_DATA, true);
-		snake_head_1.tile_index = indices.first;
-		snake_head_1.palette_index = indices.second;
+		snake_head_1.tile_index = (uint8_t) indices.first;
+		snake_head_1.palette_index = (uint8_t) indices.second;
 
 		indices = load_asset(SNAKE_HEAD_2_DATA, false);
-		snake_head_2.tile_index = indices.first;
+		snake_head_2.tile_index = (uint8_t) indices.first;
 		snake_head_2.palette_index = snake_head_1.palette_index;
 
 		indices = load_asset(SNAKE_HEAD_3_DATA, false);
-		snake_head_3.tile_index = indices.first;
+		snake_head_3.tile_index = (uint8_t) indices.first;
 		snake_head_3.palette_index = snake_head_1.palette_index;
 
 		indices = load_asset(SNAKE_HEAD_4_DATA, true);
-		snake_head_4.tile_index = indices.first;
-		snake_head_4.palette_index = indices.second;
+		snake_head_4.tile_index = (uint8_t) indices.first;
+		snake_head_4.palette_index = (uint8_t) indices.second;
 
 		indices = load_asset(SNAKE_BODY_DATA, false);
-		snake_body.tile_index = indices.first;
+		snake_body.tile_index = (uint8_t) indices.first;
 		snake_body.palette_index = snake_head_4.palette_index;
 
 		indices = load_asset(BALL_DATA, true);
-		ball.tile.tile_index = indices.first;
-		ball.tile.palette_index = indices.second;
+		ball.tile.tile_index = (uint8_t) indices.first;
+		ball.tile.palette_index = (uint8_t) indices.second;
 
 		indices = load_asset(BACKGROUND_DATA, true);
-		background.tile_index = indices.first;
-		background.palette_index = indices.second;
+		background.tile_index = (uint8_t) indices.first;
+		background.palette_index = (uint8_t) indices.second;
 
 		indices = load_asset(BAR_TOP_DATA, true);
-		bar_top.tile_index = indices.first;
-		bar_top.palette_index = indices.second;
+		bar_top.tile_index = (uint8_t) indices.first;
+		bar_top.palette_index = (uint8_t) indices.second;
 
 		indices = load_asset(BAR_BOTTOM_DATA, true);
-		bar_bottom.tile_index = indices.first;
-		bar_bottom.palette_index = indices.second;
+		bar_bottom.tile_index = (uint8_t) indices.first;
+		bar_bottom.palette_index = (uint8_t) indices.second;
 
 		indices = load_asset(A_DATA, true);
-		A.tile_index = indices.first;
-		A.palette_index = indices.second;
+		A.tile_index = (uint8_t) indices.first;
+		A.palette_index = (uint8_t) indices.second;
 
 		indices = load_asset(B_DATA, false);
-		B.tile_index = indices.first;
+		B.tile_index = (uint8_t) indices.first;
 		B.palette_index = A.palette_index;
 
 		indices = load_asset(C_DATA, false);
-		C.tile_index = indices.first;
+		C.tile_index = (uint8_t) indices.first;
 		C.palette_index = A.palette_index;
 
 		indices = load_asset(D_DATA, false);
-		D.tile_index = indices.first;
+		D.tile_index = (uint8_t) indices.first;
 		D.palette_index = A.palette_index;
 
 		indices = load_asset(E_DATA, false);
-		E.tile_index = indices.first;
+		E.tile_index = (uint8_t) indices.first;
 		E.palette_index = A.palette_index;
 
 		indices = load_asset(G_DATA, false);
-		G.tile_index = indices.first;
+		G.tile_index = (uint8_t) indices.first;
 		G.palette_index = A.palette_index;
 
 		indices = load_asset(I_DATA, false);
-		I.tile_index = indices.first;
+		I.tile_index = (uint8_t) indices.first;
 		I.palette_index = A.palette_index;
 
 		indices = load_asset(L_DATA, false);
-		L.tile_index = indices.first;
+		L.tile_index = (uint8_t) indices.first;
 		L.palette_index = A.palette_index;
 
 		indices = load_asset(M_DATA, false);
-		M.tile_index = indices.first;
+		M.tile_index = (uint8_t) indices.first;
 		M.palette_index = A.palette_index;
 
 		indices = load_asset(N_DATA, false);
-		N.tile_index = indices.first;
+		N.tile_index = (uint8_t) indices.first;
 		N.palette_index = A.palette_index;
 
 		indices = load_asset(O_DATA, false);
-		O.tile_index = indices.first;
+		O.tile_index = (uint8_t) indices.first;
 		O.palette_index = A.palette_index;
 
 		indices = load_asset(P_DATA, false);
-		P.tile_index = indices.first;
+		P.tile_index = (uint8_t) indices.first;
 		P.palette_index = A.palette_index;
 
 		indices = load_asset(R_DATA, false);
-		R.tile_index = indices.first;
+		R.tile_index = (uint8_t) indices.first;
 		R.palette_index = A.palette_index;
 
 		indices = load_asset(S_DATA, false);
-		S.tile_index = indices.first;
+		S.tile_index = (uint8_t) indices.first;
 		S.palette_index = A.palette_index;
 
 		indices = load_asset(T_DATA, false);
-		T.tile_index = indices.first;
+		T.tile_index = (uint8_t) indices.first;
 		T.palette_index = A.palette_index;
 
 		indices = load_asset(V_DATA, false);
-		V.tile_index = indices.first;
+		V.tile_index = (uint8_t) indices.first;
 		V.palette_index = A.palette_index;
 
 		indices = load_asset(W_DATA, false);
-		W.tile_index = indices.first;
+		W.tile_index = (uint8_t) indices.first;
 		W.palette_index = A.palette_index;
 
 		indices = load_asset(Y_DATA, false);
-		Y.tile_index = indices.first;
+		Y.tile_index = (uint8_t) indices.first;
 		Y.palette_index = A.palette_index;
 
 		indices = load_asset(UP_ARROW_DATA, false);
-		up_arrow.tile_index = indices.first;
+		up_arrow.tile_index = (uint8_t) indices.first;
 		up_arrow.palette_index = A.palette_index;
 
 		indices = load_asset(DOWN_ARROW_DATA, false);
-		down_arrow.tile_index = indices.first;
+		down_arrow.tile_index = (uint8_t) indices.first;
 		down_arrow.palette_index = A.palette_index;
 
 		indices = load_asset(LEFT_ARROW_DATA, false);
-		left_arrow.tile_index = indices.first;
+		left_arrow.tile_index = (uint8_t) indices.first;
 		left_arrow.palette_index = A.palette_index;
 
 		indices = load_asset(RIGHT_ARROW_DATA, false);
-		right_arrow.tile_index = indices.first;
+		right_arrow.tile_index = (uint8_t) indices.first;
 		right_arrow.palette_index = A.palette_index;
 	}
 
@@ -260,11 +260,11 @@ PlayMode::PlayMode() {
 		for (uint16_t y = 0; y < PPU466::BackgroundHeight; y++) {
 			for (uint16_t x = 0; x < PPU466::BackgroundWidth; x++) {
 				if (y == PPU466::BackgroundHeight / 4) {
-					ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(bar_top);
+					ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(bar_top);
 				} else if (y == PPU466::BackgroundHeight / 4 - 1) {
-					ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(bar_bottom);
+					ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(bar_bottom);
 				} else {
-					ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(background);
+					ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(background);
 				}
 			}
 		}
@@ -276,16 +276,16 @@ PlayMode::PlayMode() {
 		type_text(y-2, x-10, "PRESS SPACE TO START");
 
 		y = PPU466::BackgroundHeight / 5 * 2;
-		ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(W);
-		ppu.background[x-1+PPU466::BackgroundWidth*(y-1)] = get_bg(A);
-		ppu.background[x+PPU466::BackgroundWidth*(y-1)] = get_bg(S);
-		ppu.background[x+1+PPU466::BackgroundWidth*(y-1)] = get_bg(D);
+		ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(W);
+		ppu.background[x-1+PPU466::BackgroundWidth*(y-1)] = (uint16_t) get_bg(A);
+		ppu.background[x+PPU466::BackgroundWidth*(y-1)] = (uint16_t) get_bg(S);
+		ppu.background[x+1+PPU466::BackgroundWidth*(y-1)] = (uint16_t) get_bg(D);
 
 		y = PPU466::BackgroundHeight / 8;
-		ppu.background[x+PPU466::BackgroundWidth*y] = get_bg(up_arrow);
-		ppu.background[x-1+PPU466::BackgroundWidth*(y-1)] = get_bg(left_arrow);
-		ppu.background[x+PPU466::BackgroundWidth*(y-1)] = get_bg(down_arrow);
-		ppu.background[x+1+PPU466::BackgroundWidth*(y-1)] = get_bg(right_arrow);
+		ppu.background[x+PPU466::BackgroundWidth*y] = (uint16_t) get_bg(up_arrow);
+		ppu.background[x-1+PPU466::BackgroundWidth*(y-1)] = (uint16_t) get_bg(left_arrow);
+		ppu.background[x+PPU466::BackgroundWidth*(y-1)] = (uint16_t) get_bg(down_arrow);
+		ppu.background[x+1+PPU466::BackgroundWidth*(y-1)] = (uint16_t) get_bg(right_arrow);
 	}
 
 	initialize_game_state();
@@ -295,9 +295,9 @@ PlayMode::~PlayMode() {
 }
 
 
-std::pair<uint16_t, uint16_t> PlayMode::load_asset(std::string data_path, bool with_palette) {
-	static uint16_t tile_index = 0;
-	static uint16_t palette_index = 0;
+std::pair<int, int> PlayMode::load_asset(std::string data_path, bool with_palette) {
+	static int tile_index = 0;
+	static int palette_index = 0;
 
 	// https://stackoverflow.com/questions/43765881/c-reading-binary-files
 	std::ifstream file(data_path, std::ios::ate | std::ios::binary);

@@ -53,7 +53,7 @@ struct PlayMode : Mode {
 	virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
-	virtual std::pair<uint16_t, uint16_t> load_asset(std::string data_path, bool with_palette);
+	virtual std::pair<int, int> load_asset(std::string data_path, bool with_palette);
 	virtual void initialize_game_state();
 	Asset background, bar_top, bar_bottom, snake_head, snake_head_1, snake_head_2, snake_head_3, snake_head_4, snake_body;
 	Asset up_arrow, down_arrow, left_arrow, right_arrow;

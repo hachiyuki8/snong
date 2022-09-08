@@ -1,14 +1,14 @@
 # Snong
 
-Author: Joanna Yao
+**Author**: Joanna Yao
 
-Design: Pong but instead of winning by hitting the ball into the opponent's side, you win by hitting ball with your snake to make the opponent's snake longer, so they can lose the snake game before you.
+**Design**: Pong but instead of winning by hitting the ball into the opponent's side, you win by hitting ball with your snake to make the opponent's snake longer, so they can lose the snake game before you.
 
-Screen Shot:
+**Screen Shot**:
 
-![Screen Shot](screenshot.png)
+<img src="screenshot.png" width=512 height=480>
 
-How Your Asset Pipeline Works: 
+**Asset Pipeline**:
 
 `asset_converter.py` takes in 8x8 PNG files, each containing at most 4 colors, and create a color palette from it; it then maps each pixel to the index of the corresponding color in its palette, and writes the index and palette of each image to a separate binary file. 
 
@@ -22,7 +22,7 @@ Each binary file contains 32 bytes:
 
 `PlayMode.cpp` reads data directly from the binary files at the start of the game, stores the tiles and palettes, and initializes objects in game using this information.
 
-How To Play:
+**How To Play**:
 
 Press SPACE to start. WASD for player 1 (top) and arrow keys for player 2 (bottom) to control the snake.
 

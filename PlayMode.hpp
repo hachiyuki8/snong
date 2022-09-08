@@ -30,8 +30,8 @@ struct SnakeBody {
 
 struct Snake {
 	std::list<SnakeBody> bodies = {};
-	uint32_t max_len = 100;
-	uint32_t min_len = 20;
+	uint32_t max_len = 30;
+	uint32_t min_len = 10;
 	Direction direction;
 	Asset head_animation [4];
 	uint8_t head_animation_idx = 0;

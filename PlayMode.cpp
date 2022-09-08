@@ -468,13 +468,13 @@ void PlayMode::add_tail_to_snake(Snake *snake) {
 	if (x - TILE_SIZE >= 0 && !check_snake_collision(x - TILE_SIZE, y, snake)) {
 		body.position = glm::vec2(x - TILE_SIZE, y);
 		snake->bodies.push_back(body);
-	} else if (body.position.x + TILE_SIZE <= PPU466::ScreenWidth && !check_snake_collision(x + TILE_SIZE, y, snake)) {
+	} else if (x < PPU466::ScreenWidth - TILE_SIZE && !check_snake_collision(x + TILE_SIZE, y, snake)) {
 		body.position = glm::vec2(x + TILE_SIZE, y);
 		snake->bodies.push_back(body);
-	} else if (body.position.y - TILE_SIZE >= 0 && !check_snake_collision(x, y - TILE_SIZE, snake)) {
+	} else if (y - TILE_SIZE >= 0 && !check_snake_collision(x, y - TILE_SIZE, snake)) {
 		body.position = glm::vec2(x, y - TILE_SIZE);
 		snake->bodies.push_back(body);
-	} else if (body.position.y + TILE_SIZE <= PPU466::ScreenHeight && !check_snake_collision(x, y + TILE_SIZE, snake)) {
+	} else if (y < PPU466::ScreenHeight - TILE_SIZE && !check_snake_collision(x, y + TILE_SIZE, snake)) {
 		body.position = glm::vec2(x, y + TILE_SIZE);
 		snake->bodies.push_back(body);
 	} else if (DEBUG) {

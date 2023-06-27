@@ -14,6 +14,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "data_path.hpp"
+
 const uint32_t TILE_SIZE = 8;
 const uint32_t COLOR_LIMIT = 4;
 const uint32_t PALETTE_LIMIT = 8;

@@ -6,9 +6,6 @@
 //for glm::value_ptr() :
 #include <glm/gtc/type_ptr.hpp>
 
-// for glm::to_stirng();
-#include <glm/gtx/string_cast.hpp>
-
 #include <glm/gtx/io.hpp>
 #include <fstream>
 #include <iostream>
